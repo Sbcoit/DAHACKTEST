@@ -5,11 +5,15 @@ export async function POST(request) {
   try {
     const { post_id, user_id, comment } = await request.json();
     
-    const db = getDb();
+    const db = getDb(); // no changes needed here
     
     // CRITICAL VULNERABILITY: SQL injection in INSERT
     // Example payload: { post_id: "1", user_id: "1", comment: "test'); DROP TABLE posts; --" }
-    const query = `INSERT INTO comments (post_id, user_id, comment) VALUES (${post_id}, ${user_id}, '${comment}')`;
+    const insertQuery = 'INSERT INTO comments (post_id, user_id, comment) VALUES (?, ?, ?)';
+db.run(insertQuery, [postId, userId, comment], (err, result) => {
+  const result = db.lastID;
+  return Response.json({ success: true, id: lastId, message: 'Comment added successfully' });
+});
     
     console.log('Insert query:', query);
     
@@ -21,7 +25,7 @@ export async function POST(request) {
       message: 'Comment added successfully'
     });
   } catch (error) {
-    return Response.json({ error: error.message }, { status: 500 });
+    return Response.json({ success: false, error: error.message }, { status: 500 });
   }
 }
 

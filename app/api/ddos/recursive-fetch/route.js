@@ -7,7 +7,18 @@ export async function GET(request) {
   // CRITICAL VULNERABILITY: Recursive calls without limit checks
   // Can cause amplification attacks: ?depth=100&target=self
   
-  if (depth > 50) {
+  const ipRateLimit = new Map();
+if (ipRateLimit.has(request.ip)) {
+  const count = ipRateLimit.get(request.ip);
+  if (count >= 10) {
+    return Response.json({ error: 'Rate limit exceeded' }, { status: 429 });
+  }
+  ipRateLimit.set(request.ip, count + 1);
+} else {
+  ipRateLimit.set(request.ip, 1);
+}
+
+if (depth > 50) {
     return Response.json({ error: 'Depth too large' }, { status: 400 });
   }
   

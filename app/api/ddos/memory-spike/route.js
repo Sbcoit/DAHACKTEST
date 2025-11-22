@@ -4,7 +4,31 @@ export async function POST(request) {
   
   // CRITICAL VULNERABILITY: No memory limits, can exhaust server memory
   // Attackers can send: { size: 999999999 }
-  const arrays = [];
+  const rateLimitMap = new Map();
+const ipRequestCountMap = new Map();
+const arrays = [];
+
+// Rate limiting
+if (rateLimit.has(request.ip)) {
+  const count = rateLimit.get(request.ip);
+  if (count >= 10) {
+    return Response.json({ error: 'Rate limit exceeded' }, { status: 429 });
+  }
+  rateLimit.set(request.ip, count + 1);
+} else {
+  rateLimit.set(request.ip, 1);
+}
+
+// Rate limiting
+if (rateLimit.has(request.ip)) {
+  const count = rateLimit.get(request.ip);
+  if (count >= 10) {
+    return Response.json({ error: 'Rate limit exceeded' }, { status: 429 });
+  }
+  rateLimit.set(request.ip, count + 1);
+} else {
+  rateLimit.set(request.ip, 1);
+}
   
   for (let i = 0; i < size; i++) {
     // Create large arrays to consume memory

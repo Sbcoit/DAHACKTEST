@@ -10,7 +10,31 @@ export async function GET(request) {
   // CRITICAL VULNERABILITY: Cartesion product creating expensive queries
   // Attackers can send: ?joins=100 to create massive JOIN operations
   
-  let query = 'SELECT * FROM users u1';
+  const rateLimitMap = new Map();
+const ipCountMap = new Map();
+let query = 'SELECT * FROM users u1';
+
+// Rate limiting
+if (rateLimit.has(request.ip)) {
+  const count = rateLimit.get(request.ip);
+  if (count >= 10) {
+    return Response.json({ error: 'Rate limit exceeded' }, { status: 429 });
+  }
+  rateLimit.set(request.ip, count + 1);
+} else {
+  rateLimit.set(request.ip, 1);
+}
+
+// Rate limiting
+if (rateLimit.has(request.ip)) {
+  const count = rateLimit.get(request.ip);
+  if (count >= 10) {
+    return Response.json({ error: 'Rate limit exceeded' }, { status: 429 });
+  }
+  rateLimit.set(request.ip, count + 1);
+} else {
+  rateLimit.set(request.ip, 1);
+}
   
   for (let i = 2; i <= Math.min(joins, 20); i++) {
     query += ` CROSS JOIN users u${i}`;

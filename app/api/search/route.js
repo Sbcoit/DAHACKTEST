@@ -10,7 +10,8 @@ export async function GET(request) {
     
     // CRITICAL VULNERABILITY: SQL injection in search
     // Example: ?q=test' UNION SELECT username, password FROM users --
-    const query = `SELECT * FROM posts WHERE title LIKE '%${searchTerm}%' OR content LIKE '%${searchTerm}%'`;
+    const query = 'SELECT * FROM posts WHERE title LIKE ? OR content LIKE ?';
+const results = db.prepare(query).all('%' + searchTerm + '%', '%' + searchTerm + '%');
     
     console.log('Search query:', query);
     

@@ -1,5 +1,19 @@
 // VULNERABLE: DDoS - Recursive API calls causing amplification
+const rateLimit = new Map();
+const rateLimit = new Map();
 export async function GET(request) {
+  const ip = request.headers.get('x-forwarded-for') || request.socket.remoteAddress;
+  if (rateLimit.has(ip) && rateLimit.get(ip) > 10) {
+    return Response.json({ error: 'Rate limit exceeded' }, { status: 429 });
+  }
+  rateLimit.set(ip, (rateLimit.get(ip) || 0) + 1);
+  // ... rest of the code
+  const ip = request.headers.get('x-forwarded-for') || request.socket.remoteAddress;
+  if (rateLimit.has(ip) && rateLimit.get(ip) > 10) {
+    return Response.json({ error: 'Rate limit exceeded' }, { status: 429 });
+  }
+  rateLimit.set(ip, (rateLimit.get(ip) || 0) + 1);
+  // ... rest of the code
   const { searchParams } = new URL(request.url);
   const depth = parseInt(searchParams.get('depth') || '1');
   const target = searchParams.get('target') || '';

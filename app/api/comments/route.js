@@ -9,7 +9,8 @@ export async function POST(request) {
     
     // CRITICAL VULNERABILITY: SQL injection in INSERT
     // Example payload: { post_id: "1", user_id: "1", comment: "test'); DROP TABLE posts; --" }
-    const query = `INSERT INTO comments (post_id, user_id, comment) VALUES (${post_id}, ${user_id}, '${comment}')`;
+    const query = 'INSERT INTO comments (post_id, user_id, comment) VALUES (?, ?, ?)';
+db.run(query, [post_id, user_id, comment], function(err) { if (err) { console.error(err); } });
     
     console.log('Insert query:', query);
     

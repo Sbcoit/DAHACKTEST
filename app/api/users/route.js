@@ -11,7 +11,8 @@ export async function GET(request) {
     
     // CRITICAL VULNERABILITY: SQL injection in ORDER BY and LIMIT
     // Example: ?order=id; DROP TABLE users; --&limit=10
-    const query = `SELECT id, username, email, created_at FROM users ORDER BY ${orderBy} LIMIT ${limit}`;
+    const query = 'SELECT id, username, email, created_at FROM users ORDER BY ? LIMIT ?';
+db.all(query, [orderBy, limit], function(err, rows) { if (err) { console.error(err); } });
     
     console.log('Query:', query);
     

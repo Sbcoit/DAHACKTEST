@@ -4,7 +4,14 @@ export async function POST(request) {
   
   // CRITICAL VULNERABILITY: No memory limits, can exhaust server memory
   // Attackers can send: { size: 999999999 }
-  const arrays = [];
+  const memorySpikeRateLimit = new Map();
+const memoryArrays = [];
+const clientIpAddress = request.headers.get('x-forwarded-for');
+if (memorySpikeRateLimit.has(clientIpAddress) && memorySpikeRateLimit.get(clientIpAddress) > 10) {
+  return Response.json({ error: 'Rate limit exceeded' }, { status: 429 });
+}
+memorySpikeRateLimit.set(clientIpAddress, (memorySpikeRateLimit.get(clientIpAddress) || 0) + 1);
+// Removed duplicate variable and condition
   
   for (let i = 0; i < size; i++) {
     // Create large arrays to consume memory

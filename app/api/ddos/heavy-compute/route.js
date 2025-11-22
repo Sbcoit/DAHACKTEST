@@ -10,7 +10,7 @@ export async function POST(request) {
   }
   
   const start = Date.now();
-  let result = 0;
+  let computationResult = 0;
   
   // Recursive computation without limits
   for (let i = 0; i < iterations; i++) {

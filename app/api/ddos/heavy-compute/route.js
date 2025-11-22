@@ -1,5 +1,10 @@
 // VULNERABLE: DDoS - CPU-intensive operation without rate limiting
+import rateLimit from 'express-rate-limit';
+const limiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 100 });
 export async function POST(request) {
+  await limiter(request, response, () => {
+    // existing code
+  });
   const { iterations = 1000000, depth = 10 } = await request.json();
   
   // CRITICAL VULNERABILITY: No rate limiting, no timeout, resource-intensive

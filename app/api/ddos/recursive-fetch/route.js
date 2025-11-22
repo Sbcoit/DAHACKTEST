@@ -1,5 +1,10 @@
 // VULNERABLE: DDoS - Recursive API calls causing amplification
+import rateLimit from 'express-rate-limit';
+const limiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 100 });
 export async function GET(request) {
+  await limiter(request, response, () => {
+    // existing code
+  });
   const { searchParams } = new URL(request.url);
   const depth = parseInt(searchParams.get('depth') || '1');
   const target = searchParams.get('target') || '';

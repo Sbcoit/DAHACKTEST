@@ -1,5 +1,8 @@
 // VULNERABLE: DDoS - Memory exhaustion without limits
+import rateLimit from 'express-rate-limit';
+const limiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 100 });
 export async function POST(request) {
+  await limiter(request, response, () => {
   const { size = 1000 } = await request.json();
   
   // CRITICAL VULNERABILITY: No memory limits, can exhaust server memory

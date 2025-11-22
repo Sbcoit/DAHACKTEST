@@ -1,7 +1,10 @@
 import { getDb } from '@/lib/db';
 
 // VULNERABLE: DDoS - Expensive database queries without limits
+import rateLimit from 'express-rate-limit';
+const limiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 100 });
 export async function GET(request) {
+  await limiter(request, response, () => {
   const { searchParams } = new URL(request.url);
   const joins = parseInt(searchParams.get('joins') || '5');
   

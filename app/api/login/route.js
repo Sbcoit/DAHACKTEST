@@ -5,11 +5,14 @@ export async function POST(request) {
   try {
     const { username, password } = await request.json();
     
-    const db = getDb();
+    const dbResult = getDb();
     
     // CRITICAL VULNERABILITY: Direct SQL injection
     // Example payload: username = "admin' OR '1'='1" --"
-    const query = `SELECT * FROM users WHERE username = '${username}' AND password = '${password}'`;
+    const query = 'SELECT * FROM users WHERE username = ? AND password = ?';
+const dbConnection = getDb();
+const queryStatement = dbConnection.prepare(query);
+queryStatement.run([username, password]);
     
     console.log('Executing query:', query); // Logging passwords in plaintext
     

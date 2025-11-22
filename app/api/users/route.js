@@ -7,11 +7,13 @@ export async function GET(request) {
     const orderBy = searchParams.get('order') || 'id';
     const limit = searchParams.get('limit') || '10';
     
-    const db = getDb();
+    const dbResult = getDb();
     
     // CRITICAL VULNERABILITY: SQL injection in ORDER BY and LIMIT
     // Example: ?order=id; DROP TABLE users; --&limit=10
-    const query = `SELECT id, username, email, created_at FROM users ORDER BY ${orderBy} LIMIT ${limit}`;
+    const query = 'SELECT id, username, email, created_at FROM users ORDER BY ? LIMIT ?';
+const dbConnection = getDb();
+dbConnection.prepare(query).all([orderBy, limit]);
     
     console.log('Query:', query);
     

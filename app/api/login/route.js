@@ -9,11 +9,12 @@ export async function POST(request) {
     
     // CRITICAL VULNERABILITY: Direct SQL injection
     // Example payload: username = "admin' OR '1'='1" --"
-    const query = `SELECT * FROM users WHERE username = '${username}' AND password = '${password}'`;
+    const query = 'SELECT * FROM users WHERE username = ? AND password = ?';
+const user = db.prepare(query).get([username, password]);
     
     console.log('Executing query:', query); // Logging passwords in plaintext
     
-    const user = db.prepare(query).get();
+    const userResult = db.prepare(query).get();
     
     if (user) {
       return Response.json({ 
